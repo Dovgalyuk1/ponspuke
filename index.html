@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PONS PUKE · $PUKE</title>
+<link rel="icon" href="assets/favicon.png">
+<meta name="description" content="pons puke. i swallow it, i hate it, i give it back.">
+<meta property="og:title" content="PONS PUKE · $PUKE">
+<meta property="og:description" content="i swallow it, i hate it, i give it back.">
+<meta property="og:image" content="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script>
+/* SETTINGS - everything is changed here, at the top, in ONE place */
+window.CONTRACT = "";  /* contract address. empty = "soon" */
+window.TWITTER  = "";  /* link to X. empty = plain x.com link */
+document.addEventListener('DOMContentLoaded', function(){
+  var CA=(window.CONTRACT||"").trim(), TW=(window.TWITTER||"").trim();
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var h=a.getAttribute('href')||"";
+    if(h.indexOf('pump.fun')>-1){ if(CA) a.href='https://pump.fun/coin/'+CA; }
+    else if(h.indexOf('dexscreener')>-1){ if(CA) a.href='https://dexscreener.com/solana/'+CA; }
+    else if(h.indexOf('x.com')>-1||h.indexOf('twitter.com')>-1){ if(TW) a.href=TW; }
+  });
+  if(CA){
+    document.querySelectorAll('.ca b, .ca-val').forEach(function(b){ b.textContent=CA; });
+    document.querySelectorAll('.ca, .ca-row').forEach(function(el){
+      el.title=CA; el.style.cursor='pointer';
+      el.addEventListener('click', function(){ if(navigator.clipboard) navigator.clipboard.writeText(CA); });
+    });
+  }
+});
+</script>
+
+<style>
+:root{
+  --acid:#4cf203;
+  --acid-d:#3ac402;
+  --ink:#0b1f03;
+  --ink-2:#123106;
+  --chrome:#eef4f1;
+  --chrome-d:#9fb3ab;
+  --gold:#ffc82e;
+  --gold-d:#a86f0d;
+  --gold-l:#ffe9a3;
+  --bile:#c9ff45;
+  --mouth:#c2545f;
+  --paper:#f4ffe6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--acid);
+  color:var(--ink);
+  font-family:'DM Mono',ui-monospace,monospace;
+  overflow-x:clip;
+  -webkit-font-smoothing:antialiased;
+}
+body.gated{overflow:hidden;height:100svh}
+img{max-width:100%;display:block}
+a{color:inherit}
+b{font-weight:500}
+
+/* ---------- shared bits ---------- */
+.wrap{width:min(1180px,92vw);margin:0 auto}
+.disp{font-family:'Rubik Mono One',system-ui,sans-serif;font-weight:400;letter-spacing:.01em}
+.tag{
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink);opacity:.72;
+}
+.panel{
+  background:var(--paper);
+  border:3px solid var(--ink);
+  border-radius:14px;
+  box-shadow:0 8px 0 var(--ink), 0 8px 30px rgba(6,25,2,.25);
+}
+.h2{
+  font-size:clamp(22px,4.6vw,44px);line-height:.95;margin:0 0 6px;
+  color:var(--ink);
+  text-shadow:3px 3px 0 var(--bile);
+}
+.lead{font-size:clamp(13px,1.6vw,16px);line-height:1.72;margin:0 0 14px}
+
+/* ---------- film ---------- */
+.film{position:fixed;inset:0;pointer-events:none;z-index:70}
+.scanlines{position:absolute;inset:0;background:repeating-linear-gradient(rgba(0,0,0,.16) 0 1px,transparent 1px 3px);mix-blend-mode:multiply;opacity:.55}
+.grain{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.6) .5px,transparent .6px);background-size:3px 3px;mix-blend-mode:overlay;opacity:.18}
+.vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 44%, #0000 50%, rgba(6,25,2,.55) 100%)}
+
+/* ---------- gate ---------- */
+#gate{
+  position:fixed;inset:0;z-index:120;background:var(--acid);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:26px;
+  cursor:pointer;text-align:center;padding:20px;
+}
+#gate.off{opacity:0;pointer-events:none;transition:opacity .45s ease}
+#gate .gp{
+  font-family:'Rubik Mono One',sans-serif;font-size:clamp(30px,8vw,74px);line-height:1;
+  color:var(--chrome);
+  -webkit-text-stroke:7px var(--ink);paint-order:stroke fill;
+  filter:drop-shadow(0 7px 0 var(--ink-2)) drop-shadow(0 18px 22px rgba(6,25,2,.45));
+  animation:heave 2.4s ease-in-out infinite;
+}
+@keyframes heave{0%,100%{transform:translateY(0) scale(1)}42%{transform:translateY(4px) scale(1.03,.96)}58%{transform:translateY(-6px) scale(.97,1.05)}}
+#gate .sub{font-size:12px;letter-spacing:.3em;text-transform:uppercase;animation:blink 1.4s steps(1) infinite}
+@keyframes blink{50%{opacity:.18}}
+.drips{position:absolute;left:0;right:0;top:0;height:120px;pointer-events:none}
+.drip{position:absolute;top:-40px;width:10px;height:34px;border-radius:0 0 60% 60%/0 0 100% 100%;background:linear-gradient(180deg,var(--gold-l),var(--gold),var(--gold-d));animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(115svh)}}
+
+/* ---------- cutscene ---------- */
+#cut{
+  position:fixed;inset:0;z-index:110;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;color:var(--bile);
+}
+#cut.off{display:none}
+#cut .stage{font-family:'Rubik Mono One',sans-serif;font-size:clamp(22px,6vw,52px);color:var(--chrome);text-align:center;padding:0 16px}
+#cut .bar{width:min(420px,80vw);height:14px;border:2px solid var(--bile);padding:2px}
+#cut .bar i{display:block;height:100%;width:0%;background:var(--bile)}
+#cut .skip{
+  position:absolute;right:18px;bottom:18px;font:500 11px/1 'DM Mono',monospace;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--bile);background:none;border:2px solid var(--bile);
+  padding:9px 14px;cursor:pointer;border-radius:8px;
+}
+#cut .skip:hover{background:var(--bile);color:var(--ink)}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  display:flex;align-items:center;gap:12px;justify-content:space-between;
+  padding:9px 14px;background:var(--ink);color:var(--bile);
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;flex-wrap:wrap;
+}
+.topbar .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:7px;animation:blink 1.1s steps(1) infinite}
+.topbar .grp{display:flex;gap:14px;align-items:center}
+.snd{background:none;border:1px solid var(--bile);color:var(--bile);font:inherit;letter-spacing:.16em;text-transform:uppercase;padding:4px 9px;border-radius:6px;cursor:pointer}
+.snd:hover{background:var(--bile);color:var(--ink)}
+#vol{width:70px;accent-color:var(--bile)}
+
+/* ---------- hero ---------- */
+#hero{position:relative;min-height:100svh;padding:56px 0 26px;overflow:hidden}
+#floor{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.hero-in{position:relative;z-index:3;display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:center;padding-top:24px}
+.wordmark{
+  font-family:'Rubik Mono One',sans-serif;
+  font-size:clamp(40px,10vw,132px);line-height:.96;margin:0;
+  background:linear-gradient(#ffffff 30%,var(--chrome-d) 52%,#ffffff 60%,var(--gold-l) 78%,var(--gold) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-stroke:clamp(4px,1.1vw,8px) var(--ink);paint-order:stroke fill;
+  filter:drop-shadow(0 .05em 0 var(--gold-d)) drop-shadow(0 .1em 0 #4b3106) drop-shadow(0 .16em 22px rgba(6,25,2,.45));
+}
+.wordmark span{display:block}
+.wordmark .b{margin-left:.06em}
+.slogan{font-size:clamp(13px,1.9vw,19px);line-height:1.6;margin:20px 0 18px;max-width:34ch}
+.hero-cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font:500 12px/1 'DM Mono',monospace;letter-spacing:.18em;text-transform:uppercase;
+  padding:13px 18px;border:3px solid var(--ink);border-radius:11px;background:var(--paper);
+  color:var(--ink);text-decoration:none;box-shadow:0 5px 0 var(--ink);cursor:pointer;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn.gold{background:linear-gradient(180deg,var(--gold-l),var(--gold));}
+.btn.chrome{background:linear-gradient(180deg,#fff,var(--chrome-d))}
+.btn.dark{background:var(--ink);color:var(--bile);border-color:var(--ink)}
+
+/* character */
+.char{position:relative;justify-self:center;width:min(560px,82vw);transform-origin:50% 92%}
+.char img{width:100%;filter:drop-shadow(0 24px 26px rgba(6,25,2,.4))}
+.char.idle{animation:sway 3.6s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-1.2deg) translateY(0)}to{transform:rotate(1.4deg) translateY(-10px)}}
+.char.retch{animation:retch .62s ease-in-out}
+@keyframes retch{
+  0%{transform:scale(1,1) rotate(0)}
+  22%{transform:scale(1.1,.86) rotate(-3deg) translateY(12px)}
+  46%{transform:scale(.9,1.14) rotate(2deg) translateY(-14px)}
+  70%{transform:scale(1.06,.94) rotate(-1deg) translateY(4px)}
+  100%{transform:scale(1,1) rotate(0)}
+}
+.char .halo{
+  position:absolute;left:50%;top:50%;translate:-50% -50%;
+  width:118%;aspect-ratio:1;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 62%);
+}
+.mouthmark{position:absolute;left:47%;top:35%;width:1px;height:1px}
+
+/* ---------- feeder ---------- */
+#feeder{position:relative;z-index:3;margin:8px auto 34px;padding:16px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
+#feeder .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.7;display:block;margin-bottom:6px}
+.meter{height:26px;border:3px solid var(--ink);border-radius:8px;background:#dff0cf;overflow:hidden;position:relative}
+.meter i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--bile),var(--gold));transition:width .08s linear}
+.meter u{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.2em;text-decoration:none;text-transform:uppercase}
+.meter.full i{background:linear-gradient(90deg,var(--gold),var(--mouth))}
+#feedbtn{font-size:13px;padding:16px 22px;user-select:none;touch-action:none}
+#feedbtn.on{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.tally{font-size:11px;letter-spacing:.16em;text-transform:uppercase;text-align:right;line-height:1.7}
+.tally b{font-family:'Rubik Mono One',sans-serif;font-size:20px;display:block;letter-spacing:0}
+
+/* ---------- marquee ---------- */
+.mq{background:var(--ink);color:var(--bile);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);overflow:hidden;padding:11px 0;position:relative;z-index:4}
+.mq div{display:inline-block;white-space:nowrap;animation:mq 34s linear infinite;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.mq span{padding:0 26px}
+.mq span::after{content:'●';margin-left:26px;color:var(--gold)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- sections ---------- */
+section.pad{padding:64px 0}
+.two{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:start}
+.two>*{min-width:0}
+.lore{padding:26px 28px}
+.lore p{font-size:14px;line-height:1.8;margin:0 0 14px}
+.lore p:last-child{margin-bottom:0}
+.stats{display:grid;gap:12px}
+.stat{padding:16px 18px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.stat span{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+.stat b{font-family:'Rubik Mono One',sans-serif;font-size:19px}
+
+/* tract */
+.tract{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.node{padding:18px 16px;position:relative;overflow:hidden}
+.node h3{font-family:'Rubik Mono One',sans-serif;font-size:15px;margin:10px 0 8px}
+.node p{font-size:12.5px;line-height:1.7;margin:0}
+.node .num{font-family:'Rubik Mono One',sans-serif;font-size:12px;color:var(--ink);background:var(--bile);border:2px solid var(--ink);border-radius:6px;padding:3px 7px;display:inline-block}
+.node.hot{background:var(--bile)}
+.node .pulse{position:absolute;left:0;bottom:0;height:5px;width:0%;background:var(--gold);transition:width .3s linear}
+
+/* contents list */
+.contents{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px}
+.item{padding:16px 18px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+.item .coin{width:44px;height:44px;flex:none}
+.item h4{font-family:'Rubik Mono One',sans-serif;font-size:13px;margin:2px 0 7px}
+.item p{margin:0;font-size:12.5px;line-height:1.72}
+.item .qty{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.6;margin-top:8px;display:block}
+
+/* tv */
+.tv{padding:14px;position:relative}
+.screen{position:relative;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#0d2205;border:3px solid var(--ink)}
+.screen .feed{position:absolute;inset:0;background:var(--acid) center/cover no-repeat;transition:transform .5s ease, background-position .5s ease}
+.screen .sl{position:absolute;inset:0;background:repeating-linear-gradient(rgba(0,0,0,.28) 0 1px,transparent 1px 3px);pointer-events:none}
+.screen .roll{position:absolute;left:0;right:0;height:30%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.14),transparent);animation:roll 5s linear infinite;pointer-events:none}
+@keyframes roll{from{top:-35%}to{top:110%}}
+.screen .osd{position:absolute;left:10px;top:9px;font-size:10.5px;letter-spacing:.18em;color:var(--bile);text-shadow:0 0 6px rgba(0,0,0,.7);text-transform:uppercase}
+.screen .osd2{position:absolute;right:10px;bottom:9px;font-size:10.5px;letter-spacing:.18em;color:var(--bile);text-shadow:0 0 6px rgba(0,0,0,.7);text-transform:uppercase}
+.tvrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
+.chbtn{font:500 11px/1 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase;padding:11px 15px;border:3px solid var(--ink);border-radius:10px;background:var(--gold);box-shadow:0 4px 0 var(--ink);cursor:pointer}
+.chbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+
+/* inspector */
+.pileinfo{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.72;margin-top:12px}
+#insp{position:fixed;inset:0;z-index:100;background:rgba(8,26,2,.9);display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px}
+#insp.on{display:flex}
+#insp canvas{width:min(340px,70vw);height:min(340px,70vw);image-rendering:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.5))}
+#insp .cap{color:var(--paper);text-align:center;max-width:44ch;font-size:14px;line-height:1.7}
+#insp .cap em{display:block;font-style:normal;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--bile);margin-bottom:8px}
+#insp .nav{display:flex;gap:10px}
+#insp button{font:500 12px/1 'DM Mono',monospace;letter-spacing:.18em;text-transform:uppercase;padding:11px 16px;border:2px solid var(--bile);background:none;color:var(--bile);border-radius:9px;cursor:pointer}
+#insp button:hover{background:var(--bile);color:var(--ink)}
+
+/* peek strip */
+.peek{display:flex;gap:10px;overflow-x:auto;padding:14px 0 4px;scrollbar-width:thin}
+.peek button{flex:none;width:120px;height:120px;border:3px solid var(--ink);border-radius:12px;background:var(--acid);overflow:hidden;padding:0;cursor:pointer;box-shadow:0 4px 0 var(--ink);position:relative}
+.peek button canvas{width:100%;height:100%;display:block}
+.peek button:hover{transform:translateY(-3px)}
+
+/* ca + links */
+.cabox{padding:20px;margin-top:26px;display:grid;gap:14px}
+.ca{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--ink);color:var(--bile);border-radius:10px;padding:14px 16px;
+  font-size:12.5px;letter-spacing:.1em;word-break:break-all;cursor:pointer;
+}
+.ca em{font-style:normal;opacity:.6;letter-spacing:.2em;text-transform:uppercase;font-size:10.5px}
+.links{display:flex;gap:10px;flex-wrap:wrap}
+footer{background:var(--ink);color:var(--bile);padding:26px 0 34px;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;opacity:.85}
+
+/* side ca (desktop) */
+.sideca{position:fixed;right:0;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;z-index:55;background:var(--ink);color:var(--bile);padding:14px 8px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;cursor:pointer;border-radius:0 0 10px 10px}
+.mobca{display:none}
+
+@media (max-width:900px){
+  .hero-in{grid-template-columns:1fr;text-align:center}
+  .char{order:-1;width:min(420px,78vw)}
+  .slogan{margin-left:auto;margin-right:auto}
+  .hero-cta{justify-content:center}
+  #feeder{grid-template-columns:1fr;text-align:center}
+  .tally{text-align:center}
+  .two{grid-template-columns:1fr}
+  .tract{grid-template-columns:1fr 1fr}
+  .contents{grid-template-columns:1fr}
+  .sideca{display:none}
+  .mobca{display:block;position:fixed;left:0;right:0;bottom:0;z-index:56;background:var(--ink);color:var(--bile);padding:10px 12px;font-size:10.5px;letter-spacing:.14em;text-align:center;text-transform:uppercase;cursor:pointer}
+  footer{padding-bottom:60px}
+  #vol{display:none}
+  .topbar{font-size:9.5px;letter-spacing:.1em;padding:7px 10px;gap:8px}
+  .topbar .grp{gap:8px}
+  #hero{min-height:auto;padding-top:48px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body class="gated">
+
+<!-- GATE -->
+<div id="gate">
+  <div class="drips" id="drips"></div>
+  <div class="gp">CLICK TO ENTER</div>
+  <div class="sub">hold something down first</div>
+</div>
+
+<!-- CUTSCENE -->
+<div id="cut" class="off">
+  <div class="stage" id="cutstage">INTAKE</div>
+  <div class="bar"><i id="cutbar"></i></div>
+  <button class="skip" id="cutskip">skip</button>
+</div>
+
+<!-- FILM -->
+<div class="film"><div class="scanlines"></div><div class="grain"></div><div class="vignette"></div></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div><span class="dot"></span>purge bay · open</div>
+  <div class="grp">
+    <span id="clock">day 41</span>
+    <button class="snd" id="sndbtn">sound off</button>
+    <input id="vol" type="range" min="0" max="100" value="45" aria-label="volume">
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="floor"></canvas>
+  <div class="wrap hero-in">
+    <div>
+      <div class="tag">pons family · unit p · ticker $PUKE</div>
+      <h1 class="wordmark"><span>PONS</span><span class="b">PUKE</span></h1>
+      <p class="slogan">i swallowed the whole round and i regret every second of it. hold on, it is coming back up, and it is coming back up with interest.</p>
+      <div class="hero-cta">
+        <a class="btn gold" href="https://pump.fun">buy $puke</a>
+        <a class="btn chrome" href="https://dexscreener.com">chart</a>
+        <a class="btn dark" href="https://x.com">x</a>
+      </div>
+    </div>
+    <div class="char idle" id="char">
+      <div class="halo"></div>
+      <img id="charimg" src="assets/puke.webp" alt="the letter p, hunched over, hands on its stomach, quietly returning a fortune it never asked for">
+      <div class="mouthmark" id="mouth"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel" id="feeder">
+      <div>
+        <span class="lbl">step one</span>
+        <button class="btn gold" id="feedbtn">hold to feed him</button>
+      </div>
+      <div>
+        <span class="lbl">stomach load</span>
+        <div class="meter" id="meter"><i id="meterfill"></i><u id="meterlbl">empty · he is suspicious</u></div>
+      </div>
+      <div class="tally">
+        <span class="lbl">coins returned</span>
+        <b id="tally">0</b>
+        <span id="purges">0 purges on this machine</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq"><div id="mqrow"></div></div>
+
+<!-- LORE -->
+<section class="pad">
+  <div class="wrap two">
+    <div class="panel lore">
+      <div class="tag">unit p · statement, unsigned</div>
+      <h2 class="h2">WHO IS HE</h2>
+      <p>i am the letter p and i work intake for the pons family. every launch on this chain has to pass through somebody, and for reasons nobody has ever explained to me in writing, that somebody is my mouth. they pour the round in, they shake my hand, they leave. i have been on my feet since day one.</p>
+      <p>most letters would keep it. i have watched the letter s keep it for four months and buy a boat with it. i cannot keep anything. it goes down, it sits there for about nine minutes, and then my whole body decides on its own that this is not a storage problem, this is a return problem.</p>
+      <p>so i give it back. loudly, on the floor, in front of everyone, with a sound the marketing team has asked me twice to stop making. and here is the part they hate: it always comes back up heavier than it went down. i cannot explain the physics. i just know that i have never once put in more than i have taken out of myself.</p>
+      <p>i am not proud of the mechanism. i am proud of the numbers. stand on the yellow line and try not to slip.</p>
+    </div>
+    <div class="stats">
+      <div class="panel stat"><span>current posture</span><b>hunched</b></div>
+      <div class="panel stat"><span>hold time</span><b>9 min</b></div>
+      <div class="panel stat"><span>return rate</span><b>everything</b></div>
+      <div class="panel stat"><span>floor status</span><b id="floorstat">sticky</b></div>
+      <div class="panel stat"><span>bucket</span><b>declined</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACT -->
+<section class="pad" style="padding-top:0">
+  <div class="wrap">
+    <div class="tag">the tract</div>
+    <h2 class="h2">FOUR STAGES, NO SHORTCUTS</h2>
+    <p class="lead" style="max-width:60ch">this is the entire operation, drawn out by the health inspector who visited once and left immediately. he did not sign anything.</p>
+    <div class="tract" id="tract">
+      <div class="panel node"><span class="num">01</span><h3>INTAKE</h3><p>they back the truck up and unload the round straight in. nobody counts it, nobody asks how much i can hold, and my opinion has never been requested at this stage. i open, they pour, the paperwork is done afterwards by someone who was not here.</p><i class="pulse"></i></div>
+      <div class="panel node"><span class="num">02</span><h3>THE HOLD</h3><p>nine minutes of pretending this is fine. i stand very still, i keep my hands on my stomach, i look at a fixed point on the wall. everybody in the room can tell exactly what is about to happen and everybody keeps talking anyway.</p><i class="pulse"></i></div>
+      <div class="panel node"><span class="num">03</span><h3>REGRET</h3><p>this is the short one. the eyes go first, then the knees, then whatever holds a letter together structurally. i have been told i make a noise here. i have never heard it myself and i would prefer to keep it that way.</p><i class="pulse"></i></div>
+      <div class="panel node"><span class="num">04</span><h3>PURGE</h3><p>everything comes back out, in gold, in public, at a volume that has cost us two venues. the floor takes it, the crowd takes it, i take a knee for a second and then we go again. this is the only part anybody films.</p><i class="pulse"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- STOMACH CONTENTS -->
+<section class="pad" style="padding-top:0">
+  <div class="wrap">
+    <div class="tag">last scan</div>
+    <h2 class="h2">CURRENTLY IN THERE</h2>
+    <p class="lead" style="max-width:60ch">an incomplete list. the scan takes eleven seconds and i am never still for eleven seconds.</p>
+    <div class="contents" id="contents"></div>
+  </div>
+</section>
+
+<!-- TV + INSPECTOR -->
+<section class="pad" style="padding-top:0">
+  <div class="wrap two">
+    <div class="panel tv">
+      <div class="screen">
+        <div class="feed" id="feed"></div>
+        <div class="sl"></div><div class="roll"></div>
+        <div class="osd" id="osd">CH 01 · WIDE</div>
+        <div class="osd2">● REC · PAL</div>
+      </div>
+      <div class="tvrow">
+        <span class="tag" id="chdesc">the whole shift, uncut, nobody watches it</span>
+        <button class="chbtn" id="chbtn">CH +</button>
+      </div>
+    </div>
+    <div>
+      <div class="tag">coin inspector</div>
+      <h2 class="h2">READ WHAT CAME OUT</h2>
+      <p class="lead">every coin he returns gets stamped on the way up. click one from the pile in the bay above, or pick one out of the tray. some of them are addressed to you personally.</p>
+      <div class="peek" id="peek"></div>
+      <div class="pileinfo" id="pileinfo">pile: 0 coins on the floor</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel cabox">
+      <div class="ca" id="ca"><em>contract</em><b class="ca-val">coming up soon</b></div>
+      <div class="links">
+        <a class="btn gold" href="https://pump.fun">buy $puke</a>
+        <a class="btn chrome" href="https://dexscreener.com">dexscreener</a>
+        <a class="btn dark" href="https://x.com">x / twitter</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sideca ca" title="contract">$PUKE · contract <b class="ca-val">soon</b></div>
+<div class="mobca ca">$PUKE · contract <b class="ca-val">soon</b></div>
+
+<div id="insp" role="dialog" aria-label="coin inspector">
+  <canvas id="inspcv" width="640" height="640"></canvas>
+  <div class="cap" id="inspcap"><em>coin 000</em>text</div>
+  <div class="nav">
+    <button id="iprev">‹ prev</button>
+    <button id="iclose">esc</button>
+    <button id="inext">next ›</button>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>pons family · unit p</span>
+    <span id="fstat">shift 41 · still standing</span>
+    <span>$PUKE</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------------- sound ---------------- */
+var actx=null, muted=true, vol=0.45;
+function blip(freq, type, dur){
+  if(muted) return;
+  try{
+    if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+    var o=actx.createOscillator(), g=actx.createGain();
+    o.type=type||'square'; o.frequency.value=freq||220; g.gain.value=0.05*vol;
+    o.connect(g); g.connect(actx.destination); o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime+(dur||0.09));
+    o.stop(actx.currentTime+(dur||0.1));
+  }catch(e){}
+}
+function retchSound(){
+  if(muted) return;
+  try{
+    if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+    var o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime;
+    o.type='sawtooth'; o.frequency.setValueAtTime(180,t);
+    o.frequency.exponentialRampToValueAtTime(48,t+.45);
+    g.gain.setValueAtTime(0.07*vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+.5);
+    o.connect(g); g.connect(actx.destination); o.start(); o.stop(t+.52);
+  }catch(e){}
+}
+var sndbtn=document.getElementById('sndbtn'), volEl=document.getElementById('vol');
+sndbtn.addEventListener('click',function(){
+  muted=!muted; sndbtn.textContent = muted?'sound off':'sound on';
+  if(!muted) blip(660,'square',.08);
+});
+volEl.addEventListener('input',function(){ vol=+volEl.value/100; });
+
+/* ---------------- gate + cutscene ---------------- */
+var drips=document.getElementById('drips');
+for(var d=0; d<14; d++){
+  var el=document.createElement('i');
+  el.className='drip';
+  el.style.left=(Math.random()*100)+'%';
+  el.style.animationDuration=(2.4+Math.random()*3.4)+'s';
+  el.style.animationDelay=(-Math.random()*4)+'s';
+  el.style.opacity=(.5+Math.random()*.5);
+  el.style.transform='scale('+(.6+Math.random()*1.1)+')';
+  drips.appendChild(el);
+}
+var gate=document.getElementById('gate'), cut=document.getElementById('cut'),
+    cutstage=document.getElementById('cutstage'), cutbar=document.getElementById('cutbar'),
+    cutskip=document.getElementById('cutskip');
+var STAGES=['INTAKE','THE HOLD','REGRET','PURGE'];
+var cutTimer=null, cutSafety=null, entered=false;
+
+function endCut(){
+  if(cutTimer){clearInterval(cutTimer);cutTimer=null;}
+  if(cutSafety){clearTimeout(cutSafety);cutSafety=null;}
+  cut.classList.add('off');
+  document.body.classList.remove('gated');
+  if(!entered){ entered=true; setTimeout(function(){ purge(26); }, 500); }
+}
+cutskip.addEventListener('click', endCut);
+gate.addEventListener('click', function(){
+  gate.classList.add('off');
+  setTimeout(function(){ gate.style.display='none'; }, 480);
+  if(reduce){ endCut(); return; }
+  cut.classList.remove('off');
+  var p=0;
+  cutTimer=setInterval(function(){
+    p+=2.2 + Math.random()*2.6;
+    if(p>=100){ p=100; }
+    cutbar.style.width=p+'%';
+    var idx=Math.min(3, Math.floor(p/25.01));
+    if(cutstage.textContent!==STAGES[idx]){ cutstage.textContent=STAGES[idx]; blip(140+idx*90,'square',.07); }
+    if(p>=100){ clearInterval(cutTimer); cutTimer=null; retchSound(); setTimeout(endCut, 340); }
+  }, 60);
+  cutSafety=setTimeout(endCut, 6000);
+});
+
+/* ---------------- coin physics floor ---------------- */
+var cv=document.getElementById('floor'), ctx=cv.getContext('2d');
+var W=0,H=0,DPR=1, coins=[], MAX=150, FLOOR=0;
+var GOLD=['#ffe9a3','#ffc82e','#e2a012','#a86f0d'];
+
+function resize(){
+  var r=cv.getBoundingClientRect();
+  DPR=Math.min(window.devicePixelRatio||1,1.4);
+  W=r.width; H=r.height;
+  cv.width=Math.max(1,Math.round(W*DPR)); cv.height=Math.max(1,Math.round(H*DPR));
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  setFloor();
+}
+function setFloor(){
+  var ch=document.getElementById('char');
+  if(!ch){ FLOOR=H; return; }
+  var cr=ch.getBoundingClientRect(), hr=cv.getBoundingClientRect();
+  FLOOR = Math.min(H, Math.max(H*0.25, cr.bottom - hr.top - cr.height*0.03));
+}
+window.addEventListener('resize', resize);
+
+var STAMPS=[
+  'GOOD LUCK IN THERE',
+  'THIS WAS NEVER YOURS',
+  'RETURN TO SENDER, P',
+  'I HELD IT FOR 9 MINUTES',
+  'PROPERTY OF THE FLOOR',
+  'WARM, SORRY',
+  'MINTED IN A STOMACH',
+  'DO NOT GIVE IT BACK TO HIM',
+  'HE WILL ONLY DO IT AGAIN',
+  'ROUND 41 · UNIT P',
+  'SMELLS LIKE A LAUNCH',
+  'ONE (1) BAD DECISION',
+  'ASK HIM WHERE IT WENT',
+  'STILL LEGAL TENDER SOMEWHERE',
+  'CAUGHT MID-AIR BY A STRANGER',
+  'PLEASE STAND BACK'
+];
+var CAPTIONS=[
+  'came out sideways, landed face up, everybody in the bay agreed that means something. it does not. it never has.',
+  'this one hit the floor so hard it bounced into the crowd and a man in a suit put it straight in his pocket and left the building.',
+  'still warm. he apologised for that once, in his own way, by not saying anything and looking at the wall.',
+  'the stamp is crooked because stage three had already started when the press came down. we kept it anyway.',
+  'somebody tried to feed this exact coin back to him as a joke. he took it. he always takes it. that is the whole problem.',
+  'the edge is chewed. we do not ask about the edge, and he has never volunteered anything about the edge.',
+  'found under the yellow line four days later, which means the pile from tuesday is still technically out there somewhere.',
+  'this is the heaviest one we have logged. it went in as a fee and came out as a fortune and nobody can explain the difference.'
+];
+
+function makeCoin(x,y,vx,vy,r){
+  return {x:x,y:y,vx:vx,vy:vy,r:r||(9+Math.random()*7),
+    rot:Math.random()*Math.PI*2, vr:(Math.random()-.5)*.35,
+    sleep:0, stamp:(Math.random()*STAMPS.length)|0, cap:(Math.random()*CAPTIONS.length)|0};
+}
+function drawCoin(c,x,y,r,rot){
+  var s=Math.abs(Math.cos(rot));
+  var w=Math.max(r*0.16, r*s);
+  ctx.save(); ctx.translate(x,y);
+  // edge
+  ctx.fillStyle=GOLD[3];
+  ctx.beginPath(); ctx.ellipse(0,r*0.10,w,r,0,0,Math.PI*2); ctx.fill();
+  var g=ctx.createLinearGradient(-w,-r,w,r);
+  g.addColorStop(0,GOLD[0]); g.addColorStop(.45,GOLD[1]); g.addColorStop(1,GOLD[2]);
+  ctx.fillStyle=g;
+  ctx.beginPath(); ctx.ellipse(0,0,w,r,0,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(90,58,4,.75)'; ctx.lineWidth=Math.max(1,r*0.10);
+  ctx.beginPath(); ctx.ellipse(0,0,w*.82,r*.82,0,0,Math.PI*2); ctx.stroke();
+  if(w>r*0.5){
+    ctx.fillStyle='rgba(90,58,4,.85)';
+    ctx.font='700 '+(r*1.05)+'px "DM Mono",monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('$',0,r*0.04);
+  }
+  ctx.restore();
+}
+function step(){
+  var i,j,c,o;
+  for(i=0;i<coins.length;i++){
+    c=coins[i];
+    if(c.sleep>26) continue;
+    c.vy += 0.55; c.x += c.vx; c.y += c.vy; c.rot += c.vr;
+    c.vx *= 0.995; c.vr *= 0.985;
+    if(c.x < c.r){ c.x=c.r; c.vx*=-0.45; }
+    if(c.x > W-c.r){ c.x=W-c.r; c.vx*=-0.45; }
+    if(c.y > FLOOR-c.r*0.5){ c.y=FLOOR-c.r*0.5; c.vy*=-0.22; c.vx*=0.72; c.vr*=0.5; }
+  }
+  // separation
+  for(i=0;i<coins.length;i++){
+    c=coins[i];
+    for(j=i+1;j<coins.length;j++){
+      o=coins[j];
+      var dx=o.x-c.x, dy=(o.y-c.y)*1.6, dist=Math.sqrt(dx*dx+dy*dy)||0.01;
+      var min=(c.r+o.r)*0.82;
+      if(dist<min){
+        var push=(min-dist)/dist*0.5;
+        var px=dx*push, py=dy*push*0.62;
+        c.x-=px; c.y-=py; o.x+=px; o.y+=py;
+        c.vy*=0.86; o.vy*=0.86;
+      }
+    }
+  }
+  for(i=0;i<coins.length;i++){
+    c=coins[i];
+    if(Math.abs(c.vy)<0.6 && Math.abs(c.vx)<0.3 && c.y>FLOOR*0.55) c.sleep++; else c.sleep=0;
+  }
+}
+var raf=null, fcount=0;
+function frame(){
+  raf=requestAnimationFrame(frame);
+  if(document.hidden) return;
+  step();
+  ctx.clearRect(0,0,W,H);
+  if(++fcount%30===0) setFloor();
+  for(var i=0;i<coins.length;i++){ var c=coins[i]; drawCoin(c,c.x,c.y,c.r,c.rot); }
+  updateFlyers();
+}
+
+function mouthPoint(){
+  var m=document.getElementById('mouth'), hr=cv.getBoundingClientRect(), mr=m.getBoundingClientRect();
+  return {x: mr.left-hr.left, y: mr.top-hr.top};
+}
+
+/* purge = coins out of the mouth */
+var tallyEl=document.getElementById('tally'), purgesEl=document.getElementById('purges'),
+    pileinfo=document.getElementById('pileinfo'), charEl=document.getElementById('char');
+var total=0, purges=0;
+try{
+  total = parseInt(localStorage.getItem('puke_total')||'0',10)||0;
+  purges = parseInt(localStorage.getItem('puke_purges')||'0',10)||0;
+}catch(e){}
+function saveStats(){
+  try{ localStorage.setItem('puke_total',String(total)); localStorage.setItem('puke_purges',String(purges)); }catch(e){}
+}
+function renderStats(){
+  tallyEl.textContent = total.toLocaleString('en-US');
+  purgesEl.textContent = purges + (purges===1?' purge on this machine':' purges on this machine');
+  pileinfo.textContent = 'pile: '+coins.length+' coins on the floor'+(coins.length>=MAX?' · the rest rolled under the machine':'');
+}
+function purge(n){
+  var p=mouthPoint(), k=n||30;
+  charEl.classList.remove('retch'); void charEl.offsetWidth; charEl.classList.add('retch');
+  retchSound();
+  var spawned=0;
+  var iv=setInterval(function(){
+    for(var i=0;i<3 && spawned<k;i++,spawned++){
+      coins.push(makeCoin(p.x+(Math.random()-.5)*14, p.y+(Math.random()-.5)*10,
+        0.4+Math.random()*3.0, -1.8+Math.random()*3.0, 9+Math.random()*8));
+      if(coins.length>MAX) coins.shift();
+    }
+    if(spawned>=k){ clearInterval(iv); renderStats(); }
+  }, 34);
+  total += k; purges += 1; saveStats(); renderStats();
+  var fs=document.getElementById('floorstat');
+  if(fs) fs.textContent = coins.length>90 ? 'covered' : 'sticky';
+}
+
+/* flying coins going IN */
+var flyers=[];
+function feedOne(){
+  var p=mouthPoint();
+  var fromX = Math.random()*W, fromY = FLOOR+40;
+  flyers.push({x:fromX,y:fromY,tx:p.x,ty:p.y,t:0,r:7+Math.random()*5,rot:Math.random()*6});
+  blip(320+Math.random()*260,'square',.05);
+}
+function updateFlyers(){
+  for(var i=flyers.length-1;i>=0;i--){
+    var f=flyers[i]; f.t+=0.035; f.rot+=0.4;
+    if(f.t>=1){ flyers.splice(i,1); continue; }
+    var e=f.t*f.t*(3-2*f.t);
+    var x=f.x+(f.tx-f.x)*e, y=f.y+(f.ty-f.y)*e - Math.sin(f.t*Math.PI)*90;
+    drawCoin(f,x,y,f.r*(1-f.t*0.35),f.rot);
+  }
+}
+
+/* feeder */
+var meterFill=document.getElementById('meterfill'), meterLbl=document.getElementById('meterlbl'),
+    meter=document.getElementById('meter'), feedbtn=document.getElementById('feedbtn');
+var load=0, holding=false, holdIv=null;
+var LOADTEXT=[[0,'empty · he is suspicious'],[15,'settling · he is fine'],[40,'he has stopped talking'],[65,'he is looking at the wall'],[85,'stand back from the line'],[100,'here it comes']];
+function renderLoad(){
+  meterFill.style.width=load+'%';
+  var t=LOADTEXT[0][1];
+  for(var i=0;i<LOADTEXT.length;i++) if(load>=LOADTEXT[i][0]) t=LOADTEXT[i][1];
+  meterLbl.textContent=t;
+  meter.classList.toggle('full', load>=85);
+}
+function startHold(e){
+  if(e && e.preventDefault) e.preventDefault();
+  if(holding) return;
+  holding=true; feedbtn.classList.add('on');
+  holdIv=setInterval(function(){
+    load=Math.min(100,load+3.4); feedOne(); renderLoad();
+    if(load>=100){ stopHold(); setTimeout(function(){ purge(34+((Math.random()*16)|0)); load=0; renderLoad(); }, 260); }
+  }, 90);
+}
+function stopHold(){
+  holding=false; feedbtn.classList.remove('on');
+  if(holdIv){ clearInterval(holdIv); holdIv=null; }
+}
+feedbtn.addEventListener('pointerdown', startHold);
+window.addEventListener('pointerup', stopHold);
+window.addEventListener('pointercancel', stopHold);
+feedbtn.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ startHold(e); }});
+feedbtn.addEventListener('keyup', stopHold);
+// slow leak: he drips on his own
+setInterval(function(){
+  if(document.hidden || document.body.classList.contains('gated')) return;
+  if(Math.random()<0.45){
+    var p=mouthPoint();
+    coins.push(makeCoin(p.x+(Math.random()-.5)*10,p.y,0.8+Math.random()*2.2,0.4,7+Math.random()*5));
+    if(coins.length>MAX) coins.shift();
+    renderStats();
+  }
+}, 2600);
+
+/* click the pile -> inspector */
+cv.addEventListener('click', function(e){
+  var r=cv.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  var best=-1, bd=1e9;
+  for(var i=0;i<coins.length;i++){
+    var c=coins[i], dx=c.x-x, dy=c.y-y, d=dx*dx+dy*dy;
+    if(d < (c.r+8)*(c.r+8) && d<bd){ bd=d; best=i; }
+  }
+  if(best>=0) openInsp(coins[best].stamp, coins[best].cap);
+});
+
+/* ---------------- inspector ---------------- */
+var insp=document.getElementById('insp'), inspcv=document.getElementById('inspcv'),
+    ictx=inspcv.getContext('2d'), inspcap=document.getElementById('inspcap');
+var iStamp=0, iCap=0;
+function bigCoin(c, size, stampIdx){
+  var R=size*0.44, cx=size/2, cy=size/2;
+  c.clearRect(0,0,size,size);
+  var g=c.createRadialGradient(cx-R*.4,cy-R*.5,R*.1,cx,cy,R*1.15);
+  g.addColorStop(0,'#fff6d0'); g.addColorStop(.42,'#ffc82e'); g.addColorStop(.8,'#d69b12'); g.addColorStop(1,'#8f5d08');
+  c.fillStyle='#8f5d08'; c.beginPath(); c.arc(cx,cy+R*0.045,R,0,7); c.fill();
+  c.fillStyle=g; c.beginPath(); c.arc(cx,cy,R,0,7); c.fill();
+  c.strokeStyle='rgba(90,58,4,.6)'; c.lineWidth=R*.05;
+  c.beginPath(); c.arc(cx,cy,R*.86,0,7); c.stroke();
+  c.beginPath(); c.arc(cx,cy,R*.80,0,7); c.stroke();
+  // ridges
+  c.save(); c.translate(cx,cy);
+  for(var i=0;i<72;i++){ c.rotate(Math.PI*2/72); c.fillStyle='rgba(90,58,4,.22)'; c.fillRect(R*.925,-R*.010,R*.055,R*.020); }
+  c.restore();
+  // dollar
+  c.fillStyle='rgba(88,56,4,.9)';
+  c.font='700 '+(R*1.05)+'px "Rubik Mono One","DM Mono",monospace';
+  c.textAlign='center'; c.textBaseline='middle';
+  c.fillText('$',cx,cy+R*0.02);
+  // circular stamp text
+  var txt=STAMPS[stampIdx%STAMPS.length]+' · ';
+  c.save(); c.translate(cx,cy); c.fillStyle='rgba(88,56,4,.85)';
+  c.font='500 '+(R*.098)+'px "DM Mono",monospace'; c.textAlign='center'; c.textBaseline='middle';
+  var chars=txt.split(''), ang=Math.PI*2/chars.length;
+  for(var k=0;k<chars.length;k++){
+    c.save(); c.rotate(-Math.PI/2 + k*ang); c.translate(0,-R*.70); c.fillText(chars[k],0,0); c.restore();
+  }
+  c.restore();
+  // shine
+  var sh=c.createLinearGradient(cx-R,cy-R,cx+R,cy+R);
+  sh.addColorStop(0,'rgba(255,255,255,.42)'); sh.addColorStop(.35,'rgba(255,255,255,0)');
+  c.fillStyle=sh; c.beginPath(); c.arc(cx,cy,R,0,7); c.fill();
+}
+function openInsp(stamp, cap){
+  iStamp = stamp===undefined ? (Math.random()*STAMPS.length)|0 : stamp;
+  iCap = cap===undefined ? (Math.random()*CAPTIONS.length)|0 : cap;
+  paintInsp(); insp.classList.add('on'); blip(880,'triangle',.09);
+}
+function paintInsp(){
+  bigCoin(ictx, 640, iStamp);
+  inspcap.innerHTML='<em>stamp · '+STAMPS[iStamp%STAMPS.length]+'</em>'+CAPTIONS[iCap%CAPTIONS.length];
+}
+function shiftInsp(d){
+  iStamp=(iStamp+d+STAMPS.length)%STAMPS.length;
+  iCap=(iCap+d+CAPTIONS.length)%CAPTIONS.length;
+  paintInsp(); blip(520,'square',.06);
+}
+document.getElementById('iprev').addEventListener('click',function(){shiftInsp(-1)});
+document.getElementById('inext').addEventListener('click',function(){shiftInsp(1)});
+document.getElementById('iclose').addEventListener('click',function(){insp.classList.remove('on')});
+insp.addEventListener('click',function(e){ if(e.target===insp) insp.classList.remove('on'); });
+document.addEventListener('keydown',function(e){
+  if(!insp.classList.contains('on')) return;
+  if(e.key==='Escape') insp.classList.remove('on');
+  if(e.key==='ArrowLeft') shiftInsp(-1);
+  if(e.key==='ArrowRight') shiftInsp(1);
+});
+
+/* peek tray of coins */
+var peek=document.getElementById('peek');
+for(var t=0;t<8;t++){
+  (function(idx){
+    var b=document.createElement('button');
+    b.setAttribute('aria-label','coin stamped '+STAMPS[idx]);
+    var pc=document.createElement('canvas'); pc.width=240; pc.height=240;
+    b.appendChild(pc); peek.appendChild(b);
+    bigCoin(pc.getContext('2d'), 240, idx);
+    b.addEventListener('click', function(){ openInsp(idx, idx%CAPTIONS.length); });
+  })(t);
+}
+
+/* ---------------- contents list ---------------- */
+var ITEMS=[
+  ['ONE ENTIRE ROUND','they poured it in at 09:40 and shook my hand like that settled something. it is still in there, moving around, making decisions on its own.','qty: all of it'],
+  ['A MAN’S EXIT LIQUIDITY','he swore he would take it out on friday. friday came, friday went, and now he waits by the yellow line every morning with a bucket he brought from home.','qty: 1 exit, unused'],
+  ['THE FEE','nobody agreed on the fee, nobody wrote it down, and somehow the fee is the largest thing in here. it grows when i am not looking at it.','qty: negotiable, apparently'],
+  ['A JPEG','i do not know how a jpeg gets swallowed either. it went down flat and it has been rotating slowly ever since like it is still loading.','qty: 1 (2.4 mb)'],
+  ['FOUR HUNDRED SMALLER LETTERS','they climbed in during the tuesday launch as a bit. it stopped being a bit around 6pm. every so often one of them shouts something and the whole room goes quiet.','qty: 400, one is a q'],
+  ['TUESDAY','the actual day. i have no explanation and neither does the inspector, who left before i could show him. it comes up sometimes and it comes up loud.','qty: one (1) tuesday']
+];
+var contents=document.getElementById('contents');
+ITEMS.forEach(function(it,i){
+  var el=document.createElement('div');
+  el.className='panel item';
+  var c=document.createElement('canvas'); c.width=120; c.height=120; c.className='coin';
+  var box=document.createElement('div');
+  box.innerHTML='<h4>'+it[0]+'</h4><p>'+it[1]+'</p><span class="qty">'+it[2]+'</span>';
+  el.appendChild(c); el.appendChild(box); contents.appendChild(el);
+  bigCoin(c.getContext('2d'),120,(i*3)%STAMPS.length);
+});
+
+/* ---------------- marquee ---------------- */
+var PHRASES=['i swallow it','i hate it','i give it back','stand behind the yellow line','the floor is part of the team',
+  'nine minutes, every time','it comes back heavier','the bucket was declined','unit p is still standing','do not feed him after 6pm',
+  'the letter s kept it and bought a boat','i have never once kept anything','$puke'];
+var row=document.getElementById('mqrow');
+var half=PHRASES.map(function(p){return '<span>'+p+'</span>';}).join('');
+row.innerHTML=half+half;
+
+/* ---------------- tv channels ---------------- */
+var CH=[
+  ['CH 01 · WIDE','the whole shift, uncut, nobody watches it','center 22%','scale(1)'],
+  ['CH 02 · MOUTH CAM','the angle the health inspector asked us to remove','47% 26%','scale(2.6)'],
+  ['CH 03 · FLOOR','four hours of the pile not moving. the pile never moves.','62% 88%','scale(2.2)']
+];
+var at=0, feed=document.getElementById('feed'), osd=document.getElementById('osd'), chdesc=document.getElementById('chdesc');
+function setCh(){
+  var c=CH[at];
+  feed.style.backgroundImage='url(assets/puke.webp)';
+  feed.style.backgroundPosition=c[2];
+  feed.style.transform=c[3];
+  osd.textContent=c[0]; chdesc.textContent=c[1];
+}
+document.getElementById('chbtn').addEventListener('click',function(){
+  at=(at+1)%CH.length; setCh(); blip(200+at*130,'square',.07);
+});
+setCh();
+
+/* ---------------- tract pulse ---------------- */
+var nodes=[].slice.call(document.querySelectorAll('#tract .node'));
+var tn=0;
+setInterval(function(){
+  if(document.hidden) return;
+  nodes.forEach(function(n,i){ n.classList.toggle('hot', i===tn); n.querySelector('.pulse').style.width = (i===tn?'100%':'0%'); });
+  tn=(tn+1)%nodes.length;
+}, 1900);
+
+/* ---------------- clock ---------------- */
+var clock=document.getElementById('clock');
+setInterval(function(){
+  var d=new Date();
+  clock.textContent='day 41 · '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');
+}, 1000);
+
+/* ---------------- boot ---------------- */
+function boot(){
+  resize(); renderLoad(); renderStats();
+  if(!raf) frame();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+window.addEventListener('load', function(){ resize(); });
+})();
+</script>
+</body>
+</html>
